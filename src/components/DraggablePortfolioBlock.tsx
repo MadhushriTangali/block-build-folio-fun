@@ -4,6 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { GripVertical, Edit3, Trash2, Save, X, User, Briefcase, Star, Phone, Award } from "lucide-react";
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface PortfolioBlock {
   id: string;
@@ -15,7 +17,7 @@ interface PortfolioBlock {
 
 interface DraggablePortfolioBlockProps {
   block: PortfolioBlock;
-  onUpdate: (blockId: string, newContent: string) => void;
+  onUpdate: (blockId: string, newContent: string, newTitle?: string) => void;
   onDelete: (blockId: string) => void;
   isEditing: boolean;
   onEdit: (blockId: string) => void;
@@ -47,11 +49,25 @@ export const DraggablePortfolioBlock = ({
   const [editedContent, setEditedContent] = useState(block.content);
   const [editedTitle, setEditedTitle] = useState(block.title);
 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: block.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   const IconComponent = blockIcons[block.type];
   const colorClass = blockColors[block.type];
 
   const handleSave = () => {
-    onUpdate(block.id, editedContent);
+    onUpdate(block.id, editedContent, editedTitle);
     onEdit(block.id); // Close editing mode
   };
 
@@ -63,7 +79,11 @@ export const DraggablePortfolioBlock = ({
 
   if (isEditing) {
     return (
-      <Card className="p-4 bg-gradient-card shadow-soft border-l-4 border-l-primary animate-fade-in">
+      <Card 
+        ref={setNodeRef} 
+        style={style}
+        className="p-4 bg-gradient-card shadow-soft border-l-4 border-l-primary animate-fade-in"
+      >
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-lg ${colorClass}`}>
@@ -111,10 +131,20 @@ export const DraggablePortfolioBlock = ({
   }
 
   return (
-    <Card className="p-4 bg-gradient-card shadow-soft hover:shadow-medium transition-all duration-200 group cursor-move">
+    <Card 
+      ref={setNodeRef} 
+      style={style}
+      className={`p-4 bg-gradient-card shadow-soft hover:shadow-medium transition-all duration-200 group ${isDragging ? 'opacity-50' : ''}`}
+    >
       <div className="flex items-start gap-3">
         <div className="flex items-center gap-2">
-          <GripVertical className="w-4 h-4 text-muted-foreground group-hover:text-foreground" />
+          <div 
+            {...attributes} 
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing"
+          >
+            <GripVertical className="w-4 h-4 text-muted-foreground group-hover:text-foreground" />
+          </div>
           <div className={`p-2 rounded-lg ${colorClass}`}>
             <IconComponent className="w-4 h-4" />
           </div>

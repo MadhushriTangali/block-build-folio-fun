@@ -10,6 +10,21 @@ import { StyleCustomizer } from "@/components/StyleCustomizer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 
 interface PortfolioBuilderProps {
   onBack?: () => void;
@@ -154,9 +169,13 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
     toast.info("Opening preview in new tab...");
   };
 
-  const handleBlockUpdate = (blockId: string, newContent: string) => {
+  const handleBlockUpdate = (blockId: string, newContent: string, newTitle?: string) => {
     setBlocks(blocks.map(block => 
-      block.id === blockId ? { ...block, content: newContent } : block
+      block.id === blockId ? { 
+        ...block, 
+        content: newContent,
+        ...(newTitle && { title: newTitle })
+      } : block
     ));
   };
 
@@ -175,8 +194,25 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
     setBlocks(blocks.filter(block => block.id !== blockId));
   };
 
-  const handleReorderBlocks = (reorderedBlocks: PortfolioBlock[]) => {
-    setBlocks(reorderedBlocks);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      setBlocks((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over?.id);
+        
+        const newItems = arrayMove(items, oldIndex, newIndex);
+        return newItems.map((item, index) => ({ ...item, order: index }));
+      });
+    }
   };
 
   const handleDownload = () => {
@@ -389,7 +425,7 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold">Portfolio Blocks</h2>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <Button variant="outline" size="sm" onClick={() => handleAddBlock("about")}>
                   <Plus className="w-4 h-4" />
                   About
@@ -402,6 +438,10 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
                   <Plus className="w-4 h-4" />
                   Projects
                 </Button>
+                <Button variant="outline" size="sm" onClick={() => handleAddBlock("testimonials")}>
+                  <Plus className="w-4 h-4" />
+                  Testimonials
+                </Button>
                 <Button variant="outline" size="sm" onClick={() => handleAddBlock("contact")}>
                   <Plus className="w-4 h-4" />
                   Contact
@@ -409,20 +449,31 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
               </div>
             </div>
             
-            <div className="space-y-4">
-              {blocks
-                .sort((a, b) => a.order - b.order)
-                .map((block) => (
-                  <DraggablePortfolioBlock
-                    key={block.id}
-                    block={block}
-                    onUpdate={handleBlockUpdate}
-                    onDelete={handleDeleteBlock}
-                    isEditing={editingBlock === block.id}
-                    onEdit={(blockId) => setEditingBlock(editingBlock === blockId ? null : blockId)}
-                  />
-                ))}
-            </div>
+            <DndContext 
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext 
+                items={blocks.sort((a, b) => a.order - b.order).map(block => block.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="space-y-4">
+                  {blocks
+                    .sort((a, b) => a.order - b.order)
+                    .map((block) => (
+                      <DraggablePortfolioBlock
+                        key={block.id}
+                        block={block}
+                        onUpdate={handleBlockUpdate}
+                        onDelete={handleDeleteBlock}
+                        isEditing={editingBlock === block.id}
+                        onEdit={(blockId) => setEditingBlock(editingBlock === blockId ? null : blockId)}
+                      />
+                    ))}
+                </div>
+              </SortableContext>
+            </DndContext>
           </div>
 
           {/* Preview Panel */}
@@ -437,7 +488,7 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
                 </div>
                 
                 <div 
-                  className="space-y-4 overflow-y-auto max-h-96"
+                  className={`space-y-4 overflow-y-auto max-h-96 ${selectedTheme === 'modern' ? 'bg-slate-50 p-4 rounded-lg' : selectedTheme === 'creative' ? 'bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-lg' : selectedTheme === 'minimal' ? 'border-l-4 border-gray-300 pl-4' : 'p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg'}`}
                   style={{
                     fontFamily: stylingOptions.fontFamily,
                     fontSize: stylingOptions.fontSize === "small" ? "14px" : stylingOptions.fontSize === "large" ? "18px" : "16px",

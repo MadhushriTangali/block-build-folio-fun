@@ -8,6 +8,7 @@ import Auth from "./pages/Auth";
 import MyPortfolios from "./pages/MyPortfolios";
 import NotFound from "./pages/NotFound";
 import { PortfolioBuilder } from "./components/PortfolioBuilder";
+import PublicPortfolio from "./pages/PublicPortfolio";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
         <Route path="/auth" element={<Auth />} />
         <Route path="/portfolios" element={<MyPortfolios />} />
         <Route path="/builder/:portfolioId" element={<PortfolioBuilder />} />
+        <Route path="/portfolio/:slug" element={<PublicPortfolio />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
