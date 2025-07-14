@@ -1,17 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Sparkles, Palette, Wand2, Users, Rocket, ArrowRight } from "lucide-react";
+import { Sparkles, Palette, Wand2, Users, Rocket, ArrowRight, User } from "lucide-react";
 import { PortfolioBuilder } from "@/components/PortfolioBuilder";
 import { ThemeSelector } from "@/components/ThemeSelector";
 import { AIWritingAssistant } from "@/components/AIWritingAssistant";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [showBuilder, setShowBuilder] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user && showBuilder) {
+      navigate("/portfolios");
+    }
+  }, [user, showBuilder, navigate]);
 
   if (showBuilder) {
     return <PortfolioBuilder onBack={() => setShowBuilder(false)} />;
   }
+
+  const handleGetStarted = () => {
+    if (user) {
+      navigate("/portfolios");
+    } else {
+      navigate("/auth");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-hero">
@@ -32,17 +50,29 @@ const Index = () => {
             <Button 
               variant="hero" 
               size="xl" 
-              onClick={() => setShowBuilder(true)}
+              onClick={handleGetStarted}
               className="animate-slide-up"
             >
               <Sparkles className="w-5 h-5" />
-              Start Building
+              {user ? "My Portfolios" : "Start Building"}
               <ArrowRight className="w-5 h-5" />
             </Button>
             
-            <Button variant="outline" size="xl" className="animate-slide-up">
-              View Examples
-            </Button>
+            {user ? (
+              <div className="flex gap-2">
+                <Button variant="outline" size="xl" onClick={() => navigate("/portfolios")} className="animate-slide-up">
+                  <User className="w-4 h-4 mr-2" />
+                  Dashboard
+                </Button>
+                <Button variant="outline" size="xl" onClick={signOut} className="animate-slide-up">
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <Button variant="outline" size="xl" onClick={() => navigate("/auth")} className="animate-slide-up">
+                Sign In
+              </Button>
+            )}
           </div>
         </div>
 
@@ -97,11 +127,11 @@ const Index = () => {
           <Button 
             variant="gradient" 
             size="xl" 
-            onClick={() => setShowBuilder(true)}
+            onClick={handleGetStarted}
             className="animate-float"
           >
             <Rocket className="w-5 h-5" />
-            Start Your Portfolio Journey
+            {user ? "Go to Dashboard" : "Start Your Portfolio Journey"}
           </Button>
         </div>
       </div>
