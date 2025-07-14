@@ -180,7 +180,101 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
   };
 
   const handleDownload = () => {
-    toast.info("Download feature coming soon!");
+    const portfolioHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${portfolioTitle}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: ${stylingOptions.fontFamily}, sans-serif;
+            font-size: ${stylingOptions.fontSize === "small" ? "14px" : stylingOptions.fontSize === "large" ? "18px" : "16px"};
+            font-weight: ${stylingOptions.fontWeight};
+            font-style: ${stylingOptions.fontStyle};
+            line-height: 1.6;
+            color: #333;
+            background: #ffffff;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .portfolio-header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid ${stylingOptions.primaryColor};
+            padding-bottom: 20px;
+        }
+        .portfolio-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: ${stylingOptions.primaryColor};
+            margin-bottom: 10px;
+        }
+        .portfolio-block {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border-left: 4px solid ${stylingOptions.primaryColor};
+        }
+        .block-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: ${stylingOptions.primaryColor};
+            margin-bottom: 15px;
+        }
+        .block-content {
+            color: #555;
+            white-space: pre-wrap;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #888;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="portfolio-header">
+        <h1 class="portfolio-title">${portfolioTitle}</h1>
+    </div>
+    
+    ${blocks
+      .sort((a, b) => a.order - b.order)
+      .map(block => `
+        <div class="portfolio-block">
+            <h2 class="block-title">${block.title}</h2>
+            <div class="block-content">${block.content}</div>
+        </div>
+    `).join('')}
+    
+    <div class="footer">
+        <p>Generated on ${new Date().toLocaleDateString()}</p>
+    </div>
+</body>
+</html>`;
+
+    const blob = new Blob([portfolioHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${portfolioTitle.replace(/[^a-z0-9]/gi, '_')}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast.success("Portfolio downloaded successfully!");
   };
 
   const handleGenerateLink = async () => {
