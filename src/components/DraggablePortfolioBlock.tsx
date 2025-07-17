@@ -6,10 +6,11 @@ import { Input } from "@/components/ui/input";
 import { GripVertical, Edit3, Trash2, Save, X, User, Briefcase, Star, Phone, Award, Upload, Image } from "lucide-react";
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { ImageCropper } from './ImageCropper';
 
 interface PortfolioBlock {
   id: string;
-  type: "about" | "skills" | "projects" | "testimonials" | "contact" | "custom";
+  type: "about" | "skills" | "projects" | "testimonials" | "contact" | "custom" | "image";
   title: string;
   content: string;
   order: number;
@@ -32,6 +33,7 @@ const blockIcons = {
   testimonials: Star,
   contact: Phone,
   custom: Star,
+  image: Image,
 };
 
 const blockColors = {
@@ -41,6 +43,7 @@ const blockColors = {
   testimonials: "bg-yellow-50 border-yellow-200 text-yellow-700",
   contact: "bg-pink-50 border-pink-200 text-pink-700",
   custom: "bg-gray-50 border-gray-200 text-gray-700",
+  image: "bg-indigo-50 border-indigo-200 text-indigo-700",
 };
 
 export const DraggablePortfolioBlock = ({
@@ -53,6 +56,8 @@ export const DraggablePortfolioBlock = ({
   const [editedContent, setEditedContent] = useState(block.content);
   const [editedTitle, setEditedTitle] = useState(block.title);
   const [editedImageUrl, setEditedImageUrl] = useState(block.imageUrl || "");
+  const [showImageCropper, setShowImageCropper] = useState(false);
+  const [originalImageUrl, setOriginalImageUrl] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -90,10 +95,16 @@ export const DraggablePortfolioBlock = ({
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
-        setEditedImageUrl(result);
+        setOriginalImageUrl(result);
+        setShowImageCropper(true);
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleCropComplete = (croppedImageUrl: string) => {
+    setEditedImageUrl(croppedImageUrl);
+    setShowImageCropper(false);
   };
 
   if (isEditing) {
@@ -124,49 +135,51 @@ export const DraggablePortfolioBlock = ({
               placeholder="Enter your content here..."
             />
             
-            {/* Image Upload Section */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Upload className="w-4 h-4 mr-1" />
-                  Upload Image
-                </Button>
-                {editedImageUrl && (
+            {/* Image Upload Section - Only for Image blocks */}
+            {block.type === "image" && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
                   <Button 
                     type="button" 
                     variant="outline" 
                     size="sm" 
-                    onClick={() => setEditedImageUrl("")}
+                    onClick={() => fileInputRef.current?.click()}
                   >
-                    <X className="w-4 h-4 mr-1" />
-                    Remove Image
+                    <Upload className="w-4 h-4 mr-1" />
+                    Upload Image
                   </Button>
+                  {editedImageUrl && (
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setEditedImageUrl("")}
+                    >
+                      <X className="w-4 h-4 mr-1" />
+                      Remove Image
+                    </Button>
+                  )}
+                </div>
+                
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+                
+                {editedImageUrl && (
+                  <div className="mt-2">
+                    <img 
+                      src={editedImageUrl} 
+                      alt="Preview" 
+                      className="max-w-full h-48 object-cover rounded-md border"
+                    />
+                  </div>
                 )}
               </div>
-              
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-              />
-              
-              {editedImageUrl && (
-                <div className="mt-2">
-                  <img 
-                    src={editedImageUrl} 
-                    alt="Preview" 
-                    className="max-w-full h-32 object-cover rounded-md border"
-                  />
-                </div>
-              )}
-            </div>
+            )}
           </div>
           
           <div className="flex items-center justify-between">
@@ -217,7 +230,7 @@ export const DraggablePortfolioBlock = ({
         
         <div className="flex-1 min-w-0">
           <h3 className="font-medium mb-2">{block.title}</h3>
-          {block.imageUrl && (
+          {block.type === "image" && block.imageUrl && (
             <img 
               src={block.imageUrl} 
               alt={block.title} 
@@ -244,6 +257,16 @@ export const DraggablePortfolioBlock = ({
           </Button>
         </div>
       </div>
+      
+      {/* Image Cropper Modal */}
+      {showImageCropper && originalImageUrl && (
+        <ImageCropper
+          isOpen={showImageCropper}
+          onClose={() => setShowImageCropper(false)}
+          onCropComplete={handleCropComplete}
+          imageUrl={originalImageUrl}
+        />
+      )}
     </Card>
   );
 };

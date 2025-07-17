@@ -40,7 +40,7 @@ interface StylingOptions {
 
 interface PortfolioBlock {
   id: string;
-  type: "about" | "skills" | "projects" | "testimonials" | "contact" | "custom";
+  type: "about" | "skills" | "projects" | "testimonials" | "contact" | "custom" | "image";
   title: string;
   content: string;
   order: number;
@@ -85,7 +85,8 @@ const blockTypeLabels = {
   projects: "Projects",
   testimonials: "Testimonials",
   contact: "Contact",
-  custom: "Custom Section"
+  custom: "Custom Section",
+  image: "Image Gallery"
 };
 
 export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
@@ -197,7 +198,7 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
   };
 
   const handleAddGeneralBlock = () => {
-    const blockTypes: PortfolioBlock["type"][] = ["about", "skills", "projects", "testimonials", "contact", "custom"];
+    const blockTypes: PortfolioBlock["type"][] = ["about", "skills", "projects", "testimonials", "contact", "custom", "image"];
     const blockType = blockTypes[Math.floor(Math.random() * blockTypes.length)];
     handleAddBlock(blockType);
   };
@@ -462,6 +463,10 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
                   <Plus className="w-4 h-4 mr-1" />
                   Add Contact
                 </Button>
+                <Button variant="outline" size="sm" onClick={() => handleAddBlock("image")}>
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add Image
+                </Button>
               </div>
             </div>
             
@@ -525,13 +530,20 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
                     .sort((a, b) => a.order - b.order)
                     .map((block) => (
                       <div key={block.id} className="p-4 bg-background rounded-lg border">
-                        <h4 
-                          className="font-medium mb-2"
-                          style={{ color: stylingOptions.primaryColor }}
-                        >
-                          {block.title}
-                        </h4>
-                        <p className="text-sm text-muted-foreground">{block.content}</p>
+                         <h4 
+                           className="font-medium mb-2"
+                           style={{ color: stylingOptions.primaryColor }}
+                         >
+                           {block.title}
+                         </h4>
+                         {block.type === "image" && block.imageUrl ? (
+                           <img 
+                             src={block.imageUrl} 
+                             alt={block.title} 
+                             className="w-full h-48 object-cover rounded-md border mb-2"
+                           />
+                         ) : null}
+                         <p className="text-sm text-muted-foreground">{block.content}</p>
                       </div>
                     ))}
                 </div>

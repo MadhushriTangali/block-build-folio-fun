@@ -52,15 +52,23 @@ const colors = [
 export const StyleCustomizer = ({ onClose, currentOptions, onOptionsChange }: StyleCustomizerProps) => {
   const [options, setOptions] = useState(currentOptions);
   const [elementSelection, setElementSelection] = useState<"all" | "selected">("all");
+  const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
 
   const handleChange = (key: keyof StylingOptions, value: string) => {
     const newOptions = { 
       ...options, 
       [key]: value,
-      selectedElement: elementSelection === "selected" ? "selected" : null
+      selectedElement: elementSelection === "selected" ? selectedElementId : null
     };
     setOptions(newOptions);
     onOptionsChange(newOptions);
+  };
+
+  const handleElementSelectionChange = (value: "all" | "selected") => {
+    setElementSelection(value);
+    if (value === "all") {
+      setSelectedElementId(null);
+    }
   };
 
   return (
@@ -79,7 +87,7 @@ export const StyleCustomizer = ({ onClose, currentOptions, onOptionsChange }: St
         <div className="space-y-4">
           <div className="space-y-2">
             <Label>Apply Changes To</Label>
-            <Select value={elementSelection} onValueChange={(value: "all" | "selected") => setElementSelection(value)}>
+            <Select value={elementSelection} onValueChange={handleElementSelectionChange}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -88,6 +96,13 @@ export const StyleCustomizer = ({ onClose, currentOptions, onOptionsChange }: St
                 <SelectItem value="selected">Selected Element Only</SelectItem>
               </SelectContent>
             </Select>
+            {elementSelection === "selected" && (
+              <div className="mt-2">
+                <Label className="text-xs text-muted-foreground">
+                  Note: Click on an element in the preview to select it, then apply styling changes
+                </Label>
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">
