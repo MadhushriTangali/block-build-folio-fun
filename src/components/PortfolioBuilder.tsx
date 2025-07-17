@@ -427,24 +427,24 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
               <h2 className="text-lg font-semibold">Portfolio Blocks</h2>
               <div className="flex gap-2 flex-wrap">
                 <Button variant="outline" size="sm" onClick={() => handleAddBlock("about")}>
-                  <Plus className="w-4 h-4" />
-                  About
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add About
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => handleAddBlock("skills")}>
-                  <Plus className="w-4 h-4" />
-                  Skills
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add Skills
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => handleAddBlock("projects")}>
-                  <Plus className="w-4 h-4" />
-                  Projects
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add Projects
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => handleAddBlock("testimonials")}>
-                  <Plus className="w-4 h-4" />
-                  Testimonials
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add Testimonials
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => handleAddBlock("contact")}>
-                  <Plus className="w-4 h-4" />
-                  Contact
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add Contact
                 </Button>
               </div>
             </div>
@@ -488,12 +488,21 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
                 </div>
                 
                 <div 
-                  className={`space-y-4 overflow-y-auto max-h-96 ${selectedTheme === 'modern' ? 'bg-slate-50 p-4 rounded-lg' : selectedTheme === 'creative' ? 'bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-lg' : selectedTheme === 'minimal' ? 'border-l-4 border-gray-300 pl-4' : 'p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg'}`}
+                  className={`space-y-4 overflow-y-auto max-h-96 ${
+                    selectedTheme === 'modern' 
+                      ? 'bg-slate-50 p-4 rounded-lg border border-slate-200' 
+                      : selectedTheme === 'creative' 
+                      ? 'bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-lg border border-purple-200' 
+                      : selectedTheme === 'minimal' 
+                      ? 'border-l-4 border-gray-300 pl-4 bg-white' 
+                      : 'p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200'
+                  }`}
                   style={{
                     fontFamily: stylingOptions.fontFamily,
                     fontSize: stylingOptions.fontSize === "small" ? "14px" : stylingOptions.fontSize === "large" ? "18px" : "16px",
                     fontWeight: stylingOptions.fontWeight,
                     fontStyle: stylingOptions.fontStyle,
+                    color: stylingOptions.primaryColor,
                   }}
                 >
                   {blocks

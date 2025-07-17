@@ -54,7 +54,7 @@ const Index = () => {
               className="animate-slide-up"
             >
               <Sparkles className="w-5 h-5" />
-              {user ? "My Portfolios" : "Start Building"}
+              {user ? "My Portfolios" : "Build Portfolio"}
               <ArrowRight className="w-5 h-5" />
             </Button>
             
@@ -131,7 +131,7 @@ const Index = () => {
             className="animate-float"
           >
             <Rocket className="w-5 h-5" />
-            {user ? "Go to Dashboard" : "Start Your Portfolio Journey"}
+            {user ? "Build Portfolio" : "Start Your Portfolio Journey"}
           </Button>
         </div>
       </div>

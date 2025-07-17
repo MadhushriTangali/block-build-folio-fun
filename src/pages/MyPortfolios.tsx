@@ -226,7 +226,13 @@ export default function MyPortfolios() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => navigate(`/preview/${portfolio.id}`)}
+                      onClick={() => {
+                        if (portfolio.slug) {
+                          window.open(`/portfolio/${portfolio.slug}`, '_blank');
+                        } else {
+                          toast.error("Portfolio not published yet");
+                        }
+                      }}
                     >
                       <Eye className="w-3 h-3 mr-1" />
                       Preview

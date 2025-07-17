@@ -58,8 +58,35 @@ export const AIWritingAssistant = ({ onClose, onContentGenerated }: AIWritingAss
     // Simulate AI generation delay
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    const content = sampleGeneratedContent[selectedPrompt as keyof typeof sampleGeneratedContent];
-    setGeneratedContent(content);
+    // Add some randomization to make content different each time
+    const baseContent = sampleGeneratedContent[selectedPrompt as keyof typeof sampleGeneratedContent];
+    const variations = {
+      about: [
+        baseContent,
+        "I'm a creative problem-solver with a passion for building digital experiences. With expertise spanning multiple technologies, I thrive on turning complex challenges into elegant solutions. My approach combines technical precision with user-centered design thinking.",
+        "As a dedicated professional, I bring together technical expertise and creative vision to deliver impactful results. I'm passionate about continuous learning and staying at the forefront of industry trends to create meaningful digital experiences."
+      ],
+      project: [
+        baseContent,
+        "This innovative project demonstrates my skills in full-stack development and user experience design. Built with modern technologies, it features seamless navigation, responsive design, and optimized performance for all device types.",
+        "A comprehensive solution that showcases my ability to handle complex requirements and deliver polished results. The project emphasizes clean architecture, scalable design patterns, and attention to detail in every aspect."
+      ],
+      skills: [
+        baseContent,
+        "Technical Skills: JavaScript, React, Vue.js, Python, SQL • Design Tools: Sketch, Figma, InVision • Development: Docker, AWS, CI/CD • Leadership: Project management, mentoring, strategic planning",
+        "Core Competencies: Full-stack development, API design, database optimization • Creative: UI/UX design, prototyping, user research • Management: Agile methodology, team leadership, client communication"
+      ],
+      improve: [
+        baseContent,
+        "Your enhanced content now flows more naturally and captures attention from the first line. The improved version maintains authenticity while adding professional polish that resonates with your target audience.",
+        "The refined content showcases your unique value proposition with greater clarity and impact. Enhanced readability and stronger messaging help communicate your expertise more effectively."
+      ]
+    };
+    
+    const contentOptions = variations[selectedPrompt as keyof typeof variations] || [baseContent];
+    const randomContent = contentOptions[Math.floor(Math.random() * contentOptions.length)];
+    
+    setGeneratedContent(randomContent);
     setIsGenerating(false);
     
     toast.success("Content generated! ✨");
@@ -175,9 +202,6 @@ export const AIWritingAssistant = ({ onClose, onContentGenerated }: AIWritingAss
                       <Button variant="outline" size="sm" onClick={handleCopy}>
                         <Copy className="w-4 h-4" />
                         Copy
-                      </Button>
-                      <Button variant="default" size="sm" onClick={handleUse}>
-                        Use This Content
                       </Button>
                       <Button variant="ghost" size="sm" onClick={handleGenerate}>
                         <RefreshCw className="w-4 h-4" />

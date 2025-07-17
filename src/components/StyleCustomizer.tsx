@@ -45,7 +45,7 @@ const fontWeights = [
 
 const colors = [
   "#6366f1", "#8b5cf6", "#ec4899", "#ef4444", "#f97316",
-  "#eab308", "#22c55e", "#06b6d4", "#3b82f6", "#6366f1"
+  "#eab308", "#22c55e", "#06b6d4", "#3b82f6", "#1f2937"
 ];
 
 export const StyleCustomizer = ({ onClose, currentOptions, onOptionsChange }: StyleCustomizerProps) => {
