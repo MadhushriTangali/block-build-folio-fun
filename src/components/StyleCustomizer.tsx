@@ -11,6 +11,7 @@ interface StylingOptions {
   fontWeight: string;
   fontStyle: string;
   primaryColor: string;
+  selectedElement?: string | null;
 }
 
 interface StyleCustomizerProps {
@@ -50,9 +51,14 @@ const colors = [
 
 export const StyleCustomizer = ({ onClose, currentOptions, onOptionsChange }: StyleCustomizerProps) => {
   const [options, setOptions] = useState(currentOptions);
+  const [elementSelection, setElementSelection] = useState<"all" | "selected">("all");
 
   const handleChange = (key: keyof StylingOptions, value: string) => {
-    const newOptions = { ...options, [key]: value };
+    const newOptions = { 
+      ...options, 
+      [key]: value,
+      selectedElement: elementSelection === "selected" ? "selected" : null
+    };
     setOptions(newOptions);
     onOptionsChange(newOptions);
   };
@@ -71,6 +77,19 @@ export const StyleCustomizer = ({ onClose, currentOptions, onOptionsChange }: St
         </div>
 
         <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Apply Changes To</Label>
+            <Select value={elementSelection} onValueChange={(value: "all" | "selected") => setElementSelection(value)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Content</SelectItem>
+                <SelectItem value="selected">Selected Element Only</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="space-y-2">
             <Label>Font Family</Label>
             <Select value={options.fontFamily} onValueChange={(value) => handleChange("fontFamily", value)}>

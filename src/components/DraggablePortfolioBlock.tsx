@@ -1,23 +1,25 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { GripVertical, Edit3, Trash2, Save, X, User, Briefcase, Star, Phone, Award } from "lucide-react";
+import { GripVertical, Edit3, Trash2, Save, X, User, Briefcase, Star, Phone, Award, Upload, Image } from "lucide-react";
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 interface PortfolioBlock {
   id: string;
-  type: "about" | "skills" | "projects" | "testimonials" | "contact";
+  type: "about" | "skills" | "projects" | "testimonials" | "contact" | "custom";
   title: string;
   content: string;
   order: number;
+  imageUrl?: string;
+  selectedElement?: string | null;
 }
 
 interface DraggablePortfolioBlockProps {
   block: PortfolioBlock;
-  onUpdate: (blockId: string, newContent: string, newTitle?: string) => void;
+  onUpdate: (blockId: string, newContent: string, newTitle?: string, imageUrl?: string, selectedElement?: string | null) => void;
   onDelete: (blockId: string) => void;
   isEditing: boolean;
   onEdit: (blockId: string) => void;
@@ -29,6 +31,7 @@ const blockIcons = {
   projects: Briefcase,
   testimonials: Star,
   contact: Phone,
+  custom: Star,
 };
 
 const blockColors = {
@@ -37,6 +40,7 @@ const blockColors = {
   projects: "bg-purple-50 border-purple-200 text-purple-700",
   testimonials: "bg-yellow-50 border-yellow-200 text-yellow-700",
   contact: "bg-pink-50 border-pink-200 text-pink-700",
+  custom: "bg-gray-50 border-gray-200 text-gray-700",
 };
 
 export const DraggablePortfolioBlock = ({
@@ -48,6 +52,8 @@ export const DraggablePortfolioBlock = ({
 }: DraggablePortfolioBlockProps) => {
   const [editedContent, setEditedContent] = useState(block.content);
   const [editedTitle, setEditedTitle] = useState(block.title);
+  const [editedImageUrl, setEditedImageUrl] = useState(block.imageUrl || "");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     attributes,
@@ -67,14 +73,27 @@ export const DraggablePortfolioBlock = ({
   const colorClass = blockColors[block.type];
 
   const handleSave = () => {
-    onUpdate(block.id, editedContent, editedTitle);
+    onUpdate(block.id, editedContent, editedTitle, editedImageUrl);
     onEdit(block.id); // Close editing mode
   };
 
   const handleCancel = () => {
     setEditedContent(block.content);
     setEditedTitle(block.title);
+    setEditedImageUrl(block.imageUrl || "");
     onEdit(block.id); // Close editing mode
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setEditedImageUrl(result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   if (isEditing) {
@@ -97,12 +116,58 @@ export const DraggablePortfolioBlock = ({
             />
           </div>
           
-          <Textarea
-            value={editedContent}
-            onChange={(e) => setEditedContent(e.target.value)}
-            className="min-h-[120px] resize-none"
-            placeholder="Enter your content here..."
-          />
+          <div className="space-y-4">
+            <Textarea
+              value={editedContent}
+              onChange={(e) => setEditedContent(e.target.value)}
+              className="min-h-[120px] resize-none"
+              placeholder="Enter your content here..."
+            />
+            
+            {/* Image Upload Section */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Upload className="w-4 h-4 mr-1" />
+                  Upload Image
+                </Button>
+                {editedImageUrl && (
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setEditedImageUrl("")}
+                  >
+                    <X className="w-4 h-4 mr-1" />
+                    Remove Image
+                  </Button>
+                )}
+              </div>
+              
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+              
+              {editedImageUrl && (
+                <div className="mt-2">
+                  <img 
+                    src={editedImageUrl} 
+                    alt="Preview" 
+                    className="max-w-full h-32 object-cover rounded-md border"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
           
           <div className="flex items-center justify-between">
             <div className="flex gap-2">
@@ -152,6 +217,13 @@ export const DraggablePortfolioBlock = ({
         
         <div className="flex-1 min-w-0">
           <h3 className="font-medium mb-2">{block.title}</h3>
+          {block.imageUrl && (
+            <img 
+              src={block.imageUrl} 
+              alt={block.title} 
+              className="w-16 h-16 object-cover rounded-md mb-2 border"
+            />
+          )}
           <p className="text-sm text-muted-foreground line-clamp-3">{block.content}</p>
         </div>
         

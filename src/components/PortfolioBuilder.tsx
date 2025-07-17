@@ -40,10 +40,12 @@ interface StylingOptions {
 
 interface PortfolioBlock {
   id: string;
-  type: "about" | "skills" | "projects" | "testimonials" | "contact";
+  type: "about" | "skills" | "projects" | "testimonials" | "contact" | "custom";
   title: string;
   content: string;
   order: number;
+  imageUrl?: string;
+  selectedElement?: string | null;
 }
 
 const defaultBlocks: PortfolioBlock[] = [
@@ -82,7 +84,8 @@ const blockTypeLabels = {
   skills: "Skills",
   projects: "Projects",
   testimonials: "Testimonials",
-  contact: "Contact"
+  contact: "Contact",
+  custom: "Custom Section"
 };
 
 export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
@@ -169,12 +172,14 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
     toast.info("Opening preview in new tab...");
   };
 
-  const handleBlockUpdate = (blockId: string, newContent: string, newTitle?: string) => {
+  const handleBlockUpdate = (blockId: string, newContent: string, newTitle?: string, imageUrl?: string, selectedElement?: string | null) => {
     setBlocks(blocks.map(block => 
       block.id === blockId ? { 
         ...block, 
         content: newContent,
-        ...(newTitle && { title: newTitle })
+        ...(newTitle && { title: newTitle }),
+        ...(imageUrl !== undefined && { imageUrl }),
+        ...(selectedElement !== undefined && { selectedElement })
       } : block
     ));
   };
@@ -186,8 +191,15 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
       title: blockTypeLabels[type],
       content: "Add your content here...",
       order: blocks.length,
+      selectedElement: null,
     };
     setBlocks([...blocks, newBlock]);
+  };
+
+  const handleAddGeneralBlock = () => {
+    const blockTypes: PortfolioBlock["type"][] = ["about", "skills", "projects", "testimonials", "contact", "custom"];
+    const blockType = blockTypes[Math.floor(Math.random() * blockTypes.length)];
+    handleAddBlock(blockType);
   };
 
   const handleDeleteBlock = (blockId: string) => {
@@ -426,6 +438,10 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold">Portfolio Blocks</h2>
               <div className="flex gap-2 flex-wrap">
+                <Button variant="default" size="sm" onClick={handleAddGeneralBlock}>
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add
+                </Button>
                 <Button variant="outline" size="sm" onClick={() => handleAddBlock("about")}>
                   <Plus className="w-4 h-4 mr-1" />
                   Add About
