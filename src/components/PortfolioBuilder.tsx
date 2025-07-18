@@ -305,6 +305,17 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
             color: #555;
             white-space: pre-wrap;
         }
+        .image-container {
+            display: flex;
+            justify-content: flex-end;
+        }
+        .portfolio-image {
+            width: 192px;
+            height: 192px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 2px solid ${stylingOptions.primaryColor};
+        }
         .footer {
             text-align: center;
             margin-top: 40px;
@@ -322,12 +333,22 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
     
     ${blocks
       .sort((a, b) => a.order - b.order)
-      .map(block => `
+      .map(block => {
+        if (block.type === "image" && block.imageUrl) {
+          return `
+        <div class="portfolio-block">
+            <div class="image-container">
+                <img src="${block.imageUrl}" alt="${block.title}" class="portfolio-image" />
+            </div>
+        </div>`;
+        } else {
+          return `
         <div class="portfolio-block">
             <h2 class="block-title">${block.title}</h2>
             <div class="block-content">${block.content}</div>
-        </div>
-    `).join('')}
+        </div>`;
+        }
+      }).join('')}
     
     <div class="footer">
         <p>Generated on ${new Date().toLocaleDateString()}</p>
