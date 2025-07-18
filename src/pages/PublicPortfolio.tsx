@@ -125,11 +125,12 @@ const PublicPortfolio = () => {
             .map((block) => (
               <Card key={block.id} className="p-8 shadow-lg">
                 {block.type === "image" && block.imageUrl ? (
-                  <div className="flex justify-end">
+                  <div className="flex justify-center">
                     <img 
                       src={block.imageUrl} 
                       alt={block.title} 
-                      className="w-48 h-48 object-cover rounded-full border"
+                      className="w-48 h-48 object-cover rounded-full border-2"
+                      style={{ borderColor: portfolio.styling_options.primaryColor }}
                     />
                   </div>
                 ) : (

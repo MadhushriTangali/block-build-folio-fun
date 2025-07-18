@@ -307,7 +307,8 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
         }
         .image-container {
             display: flex;
-            justify-content: flex-end;
+            justify-content: center;
+            margin: 20px 0;
         }
         .portfolio-image {
             width: 192px;
@@ -566,7 +567,7 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
                     .map((block) => (
                         <div key={block.id} className="p-4 bg-background rounded-lg border">
                            {block.type === "image" && block.imageUrl ? (
-                             <div className="flex justify-end">
+                             <div className="flex justify-center">
                                <img 
                                  src={block.imageUrl} 
                                  alt={block.title} 
