@@ -56,15 +56,21 @@ export const ImageCropper = ({ isOpen, onClose, onCropComplete, imageUrl }: Imag
       return;
     }
 
-    const pixelCrop = convertToPixelCrop(
-      completedCrop,
-      image.naturalWidth,
-      image.naturalHeight,
-    );
+    // Use the display size to calculate the correct crop coordinates
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+
+    const pixelCrop = {
+      x: completedCrop.x * scaleX,
+      y: completedCrop.y * scaleY,
+      width: completedCrop.width * scaleX,
+      height: completedCrop.height * scaleY,
+    };
 
     canvas.width = pixelCrop.width;
     canvas.height = pixelCrop.height;
 
+    ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
 
     ctx.drawImage(
@@ -85,7 +91,7 @@ export const ImageCropper = ({ isOpen, onClose, onCropComplete, imageUrl }: Imag
         onCropComplete(croppedImageUrl);
         onClose();
       }
-    });
+    }, 'image/jpeg', 0.95);
   }, [completedCrop, onCropComplete, onClose]);
 
   return (
