@@ -198,9 +198,20 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
   };
 
   const handleAddGeneralBlock = () => {
-    const blockTypes: PortfolioBlock["type"][] = ["about", "skills", "projects", "testimonials", "contact", "custom", "image"];
+    const blockTypes: PortfolioBlock["type"][] = ["skills", "projects", "testimonials", "contact", "custom"];
     const blockType = blockTypes[Math.floor(Math.random() * blockTypes.length)];
-    handleAddBlock(blockType);
+    const customNames = ["Experience", "Education", "Achievements", "Interests", "Biography"];
+    const randomName = customNames[Math.floor(Math.random() * customNames.length)];
+    
+    const newBlock: PortfolioBlock = {
+      id: Date.now().toString(),
+      type: blockType,
+      title: blockType === "custom" ? randomName : blockTypeLabels[blockType],
+      content: "Add your content here...",
+      order: blocks.length,
+      selectedElement: null,
+    };
+    setBlocks([...blocks, newBlock]);
   };
 
   const handleDeleteBlock = (blockId: string) => {

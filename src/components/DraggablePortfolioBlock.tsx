@@ -105,6 +105,10 @@ export const DraggablePortfolioBlock = ({
   const handleCropComplete = (croppedImageUrl: string) => {
     setEditedImageUrl(croppedImageUrl);
     setShowImageCropper(false);
+    // Auto-save after cropping
+    setTimeout(() => {
+      onUpdate(block.id, editedContent, editedTitle, croppedImageUrl);
+    }, 100);
   };
 
   if (isEditing) {
