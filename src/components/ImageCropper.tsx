@@ -87,9 +87,14 @@ export const ImageCropper = ({ isOpen, onClose, onCropComplete, imageUrl }: Imag
 
     canvas.toBlob((blob) => {
       if (blob) {
-        const croppedImageUrl = URL.createObjectURL(blob);
-        onCropComplete(croppedImageUrl);
-        onClose();
+        // Convert to base64 for compatibility with downloads
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64String = reader.result as string;
+          onCropComplete(base64String);
+          onClose();
+        };
+        reader.readAsDataURL(blob);
       }
     }, 'image/jpeg', 0.95);
   }, [completedCrop, onCropComplete, onClose]);
