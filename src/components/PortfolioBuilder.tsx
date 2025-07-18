@@ -89,6 +89,17 @@ const blockTypeLabels = {
   image: "Image"
 };
 
+const getThemeStyles = (theme: string) => {
+  const themeMap = {
+    elegant: 'bg-gradient-to-br from-slate-50 to-slate-100 p-4 rounded-lg border border-slate-200',
+    colorful: 'bg-gradient-to-br from-purple-100 to-pink-100 p-4 rounded-lg border border-purple-200',
+    dark: 'bg-gradient-to-br from-gray-800 to-gray-900 p-4 rounded-lg border border-gray-700 text-white',
+    modern: 'bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-200',
+    soft: 'bg-gradient-to-br from-rose-50 to-pink-50 p-4 rounded-lg border border-rose-200',
+  };
+  return themeMap[theme as keyof typeof themeMap] || themeMap.elegant;
+};
+
 export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
   const { portfolioId } = useParams<{ portfolioId: string }>();
   const navigate = useNavigate();
@@ -520,15 +531,7 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
                 </div>
                 
                 <div 
-                  className={`space-y-4 overflow-y-auto max-h-96 ${
-                    selectedTheme === 'modern' 
-                      ? 'bg-slate-50 p-4 rounded-lg border border-slate-200' 
-                      : selectedTheme === 'creative' 
-                      ? 'bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-lg border border-purple-200' 
-                      : selectedTheme === 'minimal' 
-                      ? 'border-l-4 border-gray-300 pl-4 bg-white' 
-                      : 'p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200'
-                  }`}
+                  className={`space-y-4 overflow-y-auto max-h-96 ${getThemeStyles(selectedTheme)}`}
                   style={{
                     fontFamily: stylingOptions.fontFamily,
                     fontSize: stylingOptions.fontSize === "small" ? "14px" : stylingOptions.fontSize === "large" ? "18px" : "16px",

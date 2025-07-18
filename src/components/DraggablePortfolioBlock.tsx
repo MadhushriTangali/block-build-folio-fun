@@ -132,12 +132,15 @@ export const DraggablePortfolioBlock = ({
           </div>
           
           <div className="space-y-4">
-            <Textarea
-              value={editedContent}
-              onChange={(e) => setEditedContent(e.target.value)}
-              className="min-h-[120px] resize-none"
-              placeholder="Enter your content here..."
-            />
+            {/* Only show textarea for non-image blocks */}
+            {block.type !== "image" && (
+              <Textarea
+                value={editedContent}
+                onChange={(e) => setEditedContent(e.target.value)}
+                className="min-h-[120px] resize-none"
+                placeholder="Enter your content here..."
+              />
+            )}
             
             {/* Image Upload Section - Only for Image blocks */}
             {block.type === "image" && (
