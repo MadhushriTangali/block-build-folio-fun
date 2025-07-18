@@ -174,11 +174,11 @@ export const DraggablePortfolioBlock = ({
                 />
                 
                 {editedImageUrl && (
-                  <div className="mt-2">
+                  <div className="mt-2 flex justify-center">
                     <img 
                       src={editedImageUrl} 
                       alt="Preview" 
-                      className="max-w-full h-48 object-cover rounded-md border"
+                      className="w-48 h-48 object-cover rounded-full border"
                     />
                   </div>
                 )}
@@ -238,10 +238,12 @@ export const DraggablePortfolioBlock = ({
             <img 
               src={block.imageUrl} 
               alt={block.title} 
-              className="w-16 h-16 object-cover rounded-md mb-2 border"
+              className="w-16 h-16 object-cover rounded-full mb-2 border"
             />
           )}
-          <p className="text-sm text-muted-foreground line-clamp-3">{block.content}</p>
+          {block.type !== "image" && (
+            <p className="text-sm text-muted-foreground line-clamp-3">{block.content}</p>
+          )}
         </div>
         
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

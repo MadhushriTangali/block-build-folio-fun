@@ -86,7 +86,7 @@ const blockTypeLabels = {
   testimonials: "Testimonials",
   contact: "Contact",
   custom: "Custom Section",
-  image: "Image Gallery"
+  image: "Image"
 };
 
 export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
@@ -540,22 +540,27 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
                   {blocks
                     .sort((a, b) => a.order - b.order)
                     .map((block) => (
-                      <div key={block.id} className="p-4 bg-background rounded-lg border">
-                         <h4 
-                           className="font-medium mb-2"
-                           style={{ color: stylingOptions.primaryColor }}
-                         >
-                           {block.title}
-                         </h4>
-                         {block.type === "image" && block.imageUrl ? (
-                           <img 
-                             src={block.imageUrl} 
-                             alt={block.title} 
-                             className="w-full h-48 object-cover rounded-md border mb-2"
-                           />
-                         ) : null}
-                         <p className="text-sm text-muted-foreground">{block.content}</p>
-                      </div>
+                       <div key={block.id} className="p-4 bg-background rounded-lg border">
+                          {block.type === "image" && block.imageUrl ? (
+                            <div className="flex justify-center">
+                              <img 
+                                src={block.imageUrl} 
+                                alt={block.title} 
+                                className="w-48 h-48 object-cover rounded-full border"
+                              />
+                            </div>
+                          ) : (
+                            <>
+                              <h4 
+                                className="font-medium mb-2"
+                                style={{ color: stylingOptions.primaryColor }}
+                              >
+                                {block.title}
+                              </h4>
+                              <p className="text-sm text-muted-foreground">{block.content}</p>
+                            </>
+                          )}
+                       </div>
                     ))}
                 </div>
               </div>
