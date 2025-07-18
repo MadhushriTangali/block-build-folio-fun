@@ -14,10 +14,11 @@ interface StylingOptions {
 
 interface PortfolioBlock {
   id: string;
-  type: "about" | "skills" | "projects" | "testimonials" | "contact";
+  type: "about" | "skills" | "projects" | "testimonials" | "contact" | "custom" | "image";
   title: string;
   content: string;
   order: number;
+  imageUrl?: string;
 }
 
 interface Portfolio {
@@ -123,17 +124,29 @@ const PublicPortfolio = () => {
             .sort((a, b) => a.order - b.order)
             .map((block) => (
               <Card key={block.id} className="p-8 shadow-lg">
-                <h2 
-                  className="text-2xl font-semibold mb-4"
-                  style={{ color: portfolio.styling_options.primaryColor }}
-                >
-                  {block.title}
-                </h2>
-                <div className="prose prose-gray max-w-none">
-                  <p className="whitespace-pre-wrap text-foreground leading-relaxed">
-                    {block.content}
-                  </p>
-                </div>
+                {block.type === "image" && block.imageUrl ? (
+                  <div className="flex justify-end">
+                    <img 
+                      src={block.imageUrl} 
+                      alt={block.title} 
+                      className="w-48 h-48 object-cover rounded-full border"
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <h2 
+                      className="text-2xl font-semibold mb-4"
+                      style={{ color: portfolio.styling_options.primaryColor }}
+                    >
+                      {block.title}
+                    </h2>
+                    <div className="prose prose-gray max-w-none">
+                      <p className="whitespace-pre-wrap text-foreground leading-relaxed">
+                        {block.content}
+                      </p>
+                    </div>
+                  </>
+                )}
               </Card>
             ))}
         </div>

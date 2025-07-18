@@ -543,16 +543,16 @@ export const PortfolioBuilder = ({ onBack }: PortfolioBuilderProps) => {
                   {blocks
                     .sort((a, b) => a.order - b.order)
                     .map((block) => (
-                       <div key={block.id} className="p-4 bg-background rounded-lg border">
-                          {block.type === "image" && block.imageUrl ? (
-                            <div className="flex justify-center">
-                              <img 
-                                src={block.imageUrl} 
-                                alt={block.title} 
-                                className="w-48 h-48 object-cover rounded-full border"
-                              />
-                            </div>
-                          ) : (
+                        <div key={block.id} className="p-4 bg-background rounded-lg border">
+                           {block.type === "image" && block.imageUrl ? (
+                             <div className="flex justify-end">
+                               <img 
+                                 src={block.imageUrl} 
+                                 alt={block.title} 
+                                 className="w-48 h-48 object-cover rounded-full border"
+                               />
+                             </div>
+                           ) : (
                             <>
                               <h4 
                                 className="font-medium mb-2"
